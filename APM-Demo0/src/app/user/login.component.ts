@@ -7,6 +7,8 @@ import { State } from '../state/app.state';
 import { AuthService } from './auth.service';
 import { getMaskUserName } from './state/user.reducer';
 
+import * as UserActions from './state/user.actions'
+
 @Component({
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
@@ -29,9 +31,7 @@ export class LoginComponent implements OnInit {
   }
 
   checkChanged(): void {
-    this.store.dispatch({
-      type: '[User] Mask User Name'
-    })
+    this.store.dispatch(UserActions.maskUserName());
   }
 
   login(loginForm: NgForm): void {
