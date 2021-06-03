@@ -6,11 +6,12 @@ import { ProductService } from '../product.service';
 import { GenericValidator } from '../../shared/generic-validator';
 import { NumberValidators } from '../../shared/number.validator';
 import { Store } from '@ngrx/store';
-import { State } from 'src/app/state/app.state';
-import { getCurrentProduct } from '../state/product.reducer';
+import { getCurrentProduct, State } from '../state/product.reducer';
 import { clearCurrentProduct, setCurrentProduct } from '../state/product.action';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+
+import * as ProductActions from '../state/product.action';
 
 @Component({
   selector: 'pm-product-edit',
@@ -112,10 +113,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
   deleteProduct(product: Product): void {
     if (product && product.id) {
       if (confirm(`Really delete the product: ${product.productName}?`)) {
-        this.productService.deleteProduct(product.id).subscribe({
-          next: () => this.store.dispatch(clearCurrentProduct()),
-          error: err => this.errorMessage = err
-        });
+        this.store.dispatch(ProductActions.deleteProduct({ productId: product.id }))
       }
     } else {
       // No need to delete, it was never saved
@@ -132,15 +130,9 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         const product = { ...originalProduct, ...this.productForm.value };
 
         if (product.id === 0) {
-          this.productService.createProduct(product).subscribe({
-            next: p => this.store.dispatch(setCurrentProduct({ product: p })),
-            error: err => this.errorMessage = err
-          });
+          this.store.dispatch(ProductActions.createProduct({ product }));
         } else {
-          this.productService.updateProduct(product).subscribe({
-            next: p => this.store.dispatch(setCurrentProduct({ product: p })),
-            error: err => this.errorMessage = err
-          });
+          this.store.dispatch(ProductActions.updateProduct({ product }));
         }
       }
     }
